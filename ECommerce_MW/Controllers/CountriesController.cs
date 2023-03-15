@@ -49,19 +49,35 @@ namespace ECommerce_MW.Controllers
             return View();
         }
 
-        // POST: Countries/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //////////// HTTP POST - CREATE ACTION
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Country country)
         {
             if (ModelState.IsValid)
             {
-                country.Id = Guid.NewGuid();
                 _context.Add(country);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));//si el pais es valido agrega el pais
+
+                }
+                catch (DbUpdateException dbUpdateException)//si no valida si es un duplicado
+                {
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))//busca dentro del error alguna palabra que diga duplicate
+                    {
+                        ModelState.AddModelError(string.Empty, "Ya existe un pai­s con el mismo nombre.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);// si no imprime otro valor diferente(de servicio)
+                    }
+                }
+                catch (Exception exception)
+                {
+                    ModelState.AddModelError(string.Empty, exception.Message);
+                }
             }
             return View(country);
         }
@@ -82,6 +98,7 @@ namespace ECommerce_MW.Controllers
             return View(country);
         }
 
+        //////////// HTTP POST - EDIT ACTION
         // POST: Countries/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -100,19 +117,23 @@ namespace ECommerce_MW.Controllers
                 {
                     _context.Update(country);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateException dbUpdateException)
                 {
-                    if (!CountryExists(country.Id))//"!" negacion de la accion (en este contexto)
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
                     {
-                        return NotFound();
+                        ModelState.AddModelError(string.Empty, "Ya existe un pai­s con el mismo nombre.");
                     }
                     else
                     {
-                        throw;
+                        ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                catch (Exception exception)
+                {
+                    ModelState.AddModelError(string.Empty, exception.Message);
+                }
             }
             return View(country);
         }
