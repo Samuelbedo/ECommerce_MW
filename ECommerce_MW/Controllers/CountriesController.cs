@@ -175,9 +175,5 @@ namespace ECommerce_MW.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CountryExists(Guid id)
-        {
-          return _context.Countries.Any(e => e.Id == id);//"any" es que busca cualquier id en la lista 
-        }
     }
 }

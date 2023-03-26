@@ -1,18 +1,19 @@
-﻿@model ECommerce_MW.DAL.Entities.Country
+﻿@model ECommerce_MW.DAL.Entities.Category
 
-@{// significa que esta escrito en codigo c#
+@{
+    // significa que esta escrito en codigo c#
     ViewData["Title"] = "Create";
 }
 
 
-<h4>Pais</h4>
+<h4>Categoria</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <partial name="../Shared/PartialViews/_Country.cshtml" />
+            <partial name="../Shared/PartialViews/_Category.cshtml" />
 
             <div class="form-group">
                 <input type="submit" value="Crear" class="btn btn-outline-primary" />
@@ -24,5 +25,7 @@
 
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
